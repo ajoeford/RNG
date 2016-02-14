@@ -12,6 +12,16 @@ worksheet = workbook.add_worksheet()
 
 bold = workbook.add_format({'bold': True})
 
+#global variables
+numRanges1 = 12
+
+def getnRanges():
+    return numRanges1
+
+def writeRanges(update):
+    global numRanges1
+    numRanges1 = update
+
 #Classes for population
 class unit(object):
     '''An individual unit of the population
@@ -59,9 +69,10 @@ def createRange(i):
 
 #Ranges - establish number of ranges
 
-def simpleRanges():
+def simpleRanges(numRanges):
+    global numRanges1
+    numRanges1 = numRanges
 
-    numRanges = input('Number of Ranges: ')
     rangeDescriptions = []
 
     for i in range(numRanges):
@@ -163,7 +174,8 @@ def runTime():
     while True:
         sampleType = raw_input('Choose a sample type. \'r\' for ranges. \'l\' for lines and rows. \'d\' for days of the week.: ')
         if sampleType == 'r':
-            rangeDescriptions = simpleRanges()
+            numRanges = input('Number of Ranges: ')
+            rangeDescriptions = simpleRanges(numRanges)
             break
         elif sampleType == 'l':
             ## Complete
