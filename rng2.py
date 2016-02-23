@@ -1,5 +1,6 @@
 '''
-To Do: Change structure so input variables are isolated and passed into each necessary function. This way these inputs can be read from the gui script.
+To Do: Change structure so input variables are isolated and passed into each 
+necessary function. This way these inputs can be read from the gui script.
 
 '''
 
@@ -13,7 +14,7 @@ worksheet = workbook.add_worksheet()
 bold = workbook.add_format({'bold': True})
 
 #global variables
-numRanges1 = 12
+numRanges1 = 1
 
 def getnRanges():
     return numRanges1
