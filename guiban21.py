@@ -103,29 +103,18 @@ class RangeView1(Frame):
         self.numRanges = Entry(self)
         self.numRanges.insert(0, rng2.getnRanges())
 
-        self.blabel = Label(self, text="Beginning of Range:")
-        self.bRange = Entry(self)
-
-        self.elabel = Label(self, text="End of Range:")
-        self.eRange = Entry(self)
-
         self.nextB = Button(self, text="Next", command=self.nextHandler)
         self.prevB = Button(self, text="Previous", command=self.test1a)
 
         self.numRlabel.grid(column=0, row=0, columnspan=2, sticky=(W))
         self.numRanges.grid(column=0, row=1, columnspan=1, sticky=(N, W))
-        self.blabel.grid(column=0, row=2, columnspan=2, sticky=(W))
-        self.bRange.grid(column=0, row=3, columnspan=2, sticky=(N, E, W))
-        self.elabel.grid(column=0, row=4, columnspan=2, sticky=(W))
-        self.eRange.grid(column=0, row=5, columnspan=2, sticky=(N, E, W))
         self.nextB.grid(column=1, row=6, sticky=(S, E), padx=5, pady=5)
         self.prevB.grid(column=0, row=6, sticky = (E))
 
         for child in self.winfo_children(): child.grid_configure(padx=5, pady=5)
 
     def test1a(self):
-        tkMessageBox.showinfo("test1a", rng2.getnRanges())
-        rng2.writeRanges(self.numRanges.get())
+        pass
 
     def nextHandler(self):
         rng2.writeRanges(self.numRanges.get())
@@ -141,22 +130,41 @@ class RangeView2(Frame):
 
     #Creator for variable list of widgets
     def create_widget(self, i):
-        skip = i*4
+        skip = i*6
+        skip2 = i*3
+
+        self.descripLabel = Label(self, text="Description of Range %s" %(i+1))
+        self.descripLabel.grid(column=0, row=skip+1, columnspan=2, sticky=(W))
+        self.widgetlist.append(self.descripLabel)
+
+        self.descVar = StringVar(value=rng2.getRangePara()[0+skip2])
+
+        self.description = Entry(self, textvariable=self.descVar)
+        self.description.grid(column=0, row=skip+2, columnspan=2, sticky=(W, E))
+        self.widgetlist.append(self.description)
+
         self.blabel = Label(self, text="Beginning of Range %s:" %(i+1))
-        self.blabel.grid(column=0, row=skip+1, columnspan=2, sticky=(W))
+        self.blabel.grid(column=0, row=skip+3, columnspan=2, sticky=(W))
         self.widgetlist.append(self.blabel)
 
+        self.bRange = IntVar()
         self.bRange = Entry(self)
-        self.bRange.grid(column=0, row=skip+2, columnspan=2, sticky=(N, E, W))
+        self.bRange.insert(0, rng2.getRangePara()[1+skip2])
+
+        self.bRange.grid(column=0, row=skip+4, columnspan=1, sticky=(N, E, W))
         self.widgetlist.append(self.bRange)
 
         self.elabel = Label(self, text="End of Range %s:" %(i+1))
-        self.elabel.grid(column=0, row=skip+3, columnspan=2, sticky=(W))
+        self.elabel.grid(column=0, row=skip+5, columnspan=2, sticky=(W))
         self.widgetlist.append(self.elabel)
 
+        self.eRange = IntVar()
         self.eRange = Entry(self)
-        self.eRange.grid(column=0, row=skip+4, columnspan=2, sticky=(N, E, W))
+        self.eRange.insert(0, rng2.getRangePara()[2+skip2])
+
+        self.eRange.grid(column=0, row=skip+6, columnspan=1, sticky=(N, E, W))
         self.widgetlist.append(self.eRange)
+
     def initUI(self):
 
         #Heading of number of ranges
@@ -165,12 +173,15 @@ class RangeView2(Frame):
         #establish list of potential widgets
         self.widgetlist = []
 
-        #loop through number of ranges creating widgets
+        #loop through number of ranges creating widgets and creating fake blank variables
         for i in range(int(rng2.getnRanges())):
+            rng2.writeRangePara("")
+            rng2.writeRangePara("")
+            rng2.writeRangePara("")
             self.create_widget(i)
 
         #Movement buttons
-        self.nextB = Button(self, text="Next", command=self.test1a)
+        self.nextB = Button(self, text="Next", command=self.nextHandler)
         self.prevB = Button(self, text="Previous", command=self.prevHandler)
 
         #Positioning of widgets
@@ -182,11 +193,30 @@ class RangeView2(Frame):
         for child in self.winfo_children(): child.grid_configure(padx=5, pady=5)
 
     def test1a(self):
-        tkMessageBox.showinfo("test1a", rng2.getnRanges())
+        pass
 
     def prevHandler(self):
 
+        #clears Range Paramenter list
+        rng2.deleteRangePara()
+
+        for widget in self.widgetlist:
+            if widget.winfo_class() == 'TEntry':
+                rng2.writeRangePara(widget.get())
+
         self.parent.minor = RangeView1(self.parent)
+        self.parent.minor.grid(column=1, row=0, columnspan=3, rowspan=2, sticky=(N, S, E, W))
+
+    def nextHandler(self):
+
+        #clears Range Paramenter list
+        rng2.deleteRangePara()
+
+        for widget in self.widgetlist:
+            if widget.winfo_class() == 'TEntry':
+                rng2.writeRangePara(widget.get())
+
+        self.parent.minor = RangeView3(self.parent)
         self.parent.minor.grid(column=1, row=0, columnspan=3, rowspan=2, sticky=(N, S, E, W))
 
     def storage(self):
@@ -208,6 +238,64 @@ class RangeView2(Frame):
         #Write to excel
         rng2.writeExcel(getPopSize(popList), rangeList, sampleSize, extraSelections, seed, export, rangeDescriptions)
 
+class RangeView3(Frame):
+
+    def __init__(self, parent):
+        Frame.__init__(self, parent, borderwidth=2, relief="sunken")
+        self.parent = parent
+        self.initUI()
+
+    def initUI(self):
+
+        self.samlabel = Label(self, text="Sample Size:")
+        self.sam = IntVar()
+        self.sam = Entry(self)
+        self.sam.insert(0, rng2.getSam())
+
+        self.exlabel = Label(self, text="Extra Selections:")
+        self.extra = IntVar()
+        self.extra = Entry(self)
+        self.extra.insert(0, rng2.getEx())
+
+        self.seedlabel = Label(self, text="Seed #:")
+        self.seed = IntVar()
+        self.seed = Entry(self)
+        self.seed.insert(0, rng2.getSeed())
+
+        self.nextB = Button(self, text="Next", command=self.nextHandler)
+        self.prevB = Button(self, text="Previous", command=self.prevHandler)
+
+        self.samlabel.grid(column=0, row=0, columnspan=2, sticky=(W))
+        self.sam.grid(column=0, row=1, columnspan=1, sticky=(N, W))
+        self.exlabel.grid(column=0, row=2, columnspan=2, sticky=(W))
+        self.extra.grid(column=0, row=3, columnspan=1, sticky=(N, W))
+        self.seedlabel.grid(column=0, row=4, columnspan=2, sticky=(W))
+        self.seed.grid(column=0, row=5, columnspan=1, sticky=(N, W))
+        self.nextB.grid(column=1, row=6, sticky=(S, E), padx=5, pady=5)
+        self.prevB.grid(column=0, row=6, sticky = (E))
+
+        for child in self.winfo_children(): child.grid_configure(padx=5, pady=5)
+
+    def test1a(self):
+        pass
+
+    def nextHandler(self):
+        rng2.writeSam(self.sam.get())
+        rng2.writeEx(self.extra.get())
+        rng2.writeSeed(self.seed.get())
+
+        self.parent.minor = RangeView2(self.parent)
+        self.parent.minor.grid(column=1, row=0, columnspan=3, rowspan=2, sticky=(N, S, E, W))
+
+    def prevHandler(self):
+
+        #write to rng2 variables
+        rng2.writeSam(self.sam.get())
+        rng2.writeEx(self.extra.get())
+        rng2.writeSeed(self.seed.get())
+
+        self.parent.minor = RangeView2(self.parent)
+        self.parent.minor.grid(column=1, row=0, columnspan=3, rowspan=2, sticky=(N, S, E, W))
 
 class DaysBoxes(Frame):
 

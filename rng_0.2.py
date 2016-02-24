@@ -14,12 +14,12 @@ class unit(object):
     def __init__(self, number, description):
         self.number = number
         self.description = description
-        
+
     def getNumber(self):
         return self.number
-        
+
     def getDescription(self):
-        return self.description    
+        return self.description
 
 #Classes for rows and lines
 class multiunit(unit):
@@ -28,8 +28,8 @@ class multiunit(unit):
         self.row = row
 
     def getRow(self):
-        return self.row 
-        
+        return self.row
+
 
 #Create ranges
 def createRange(i):
@@ -40,11 +40,11 @@ def createRange(i):
             description = raw_input('Range Description ' + str(i+1) +': ')
             for n in range(begRange, endRange+1):
                 popList.append(unit(n, description))
-    
+
             #write beg and end range back to main
             rangeList.append([begRange, endRange])
             return description
-            
+
         except NameError:
             print ('Error: Invalid number')
 
@@ -55,13 +55,13 @@ def createRange(i):
 #Ranges - establish number of ranges
 
 def simpleRanges():
-    
+
     numRanges = input('Number of Ranges: ')
     rangeDescriptions = []
 
     for i in range(numRanges):
         rangeDescriptions.append(createRange(i))
-    
+
     return rangeDescriptions
 
 #random sampler
@@ -80,11 +80,11 @@ def sampler(poplist):
     randomSamp = random.sample(poplist,sampleSize+extraSelections)
     return [randomSamp, sampleSize, extraSelections, seed]
 
-       
+
 #create numbered list of sample
 
 def sampleList(randomSample, sampleSize):
-    
+
     export = []
     count = 1
     extra = 1
@@ -127,16 +127,16 @@ def writeExcel(popSize, rangeList, sampleSize, extraSelections, seed, export, ra
     worksheet.write(row+6, col,'#', bold)
     worksheet.write(row+6, col+1,'Selection', bold)
     worksheet.write(row+6, col+2,'Description', bold)
-    
+
     row += 7
-    
+
     #write body
     for k in export:
         worksheet.write(row, col, k[0])
         worksheet.write(row, col+1, k[1])
         worksheet.write(row, col+2, k[2])
         row += 1
-    
+
     workbook.close()
 
 def getPopSize(popList):

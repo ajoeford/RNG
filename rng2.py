@@ -1,5 +1,5 @@
 '''
-To Do: Change structure so input variables are isolated and passed into each 
+To Do: Change structure so input variables are isolated and passed into each
 necessary function. This way these inputs can be read from the gui script.
 
 '''
@@ -15,6 +15,7 @@ bold = workbook.add_format({'bold': True})
 
 #global variables
 numRanges1 = 1
+rangePara = []
 
 def getnRanges():
     return numRanges1
@@ -22,6 +23,39 @@ def getnRanges():
 def writeRanges(update):
     global numRanges1
     numRanges1 = update
+
+def getRangePara():
+    return rangePara
+
+def writeRangePara(update):
+    global rangePara
+    rangePara.append(update)
+
+def deleteRangePara():
+    global rangePara
+    rangePara = []
+
+
+sam = 0
+extra = 0
+seed = 1
+def getSam():
+    return sam
+def getEx():
+    return extra
+def getSeed():
+    return seed
+def writeSam(x):
+    global sam
+    sam = x
+def writeEx(x):
+    global extra
+    extra = x
+def writeSeed(x):
+    global seed
+    seed = x
+
+
 
 #Classes for population
 class unit(object):
@@ -45,6 +79,15 @@ class multiunit(unit):
 
     def getRow(self):
         return self.row
+
+# REAL create population
+
+def createPop(numRanges, rangePara):
+    for i in numRanges:
+        skip = i*3
+        for n in range(rangePara[1+skip],rangePara[2+skip]+1):
+            popList.append(unit(n, rangePara[0+skip]))
+        rangeList.append([rangePara[1+skip],rangePara[2+skip]])
 
 
 #Create ranges
