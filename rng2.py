@@ -16,6 +16,11 @@ bold = workbook.add_format({'bold': True})
 #global variables
 numRanges1 = 1
 rangePara = []
+rangeList = []
+popList = []
+
+def getPopList():
+    return popList
 
 def getnRanges():
     return numRanges1
@@ -83,11 +88,15 @@ class multiunit(unit):
 # REAL create population
 
 def createPop(numRanges, rangePara):
-    for i in numRanges:
+    global rangeList
+    global popList
+    for i in range(int(numRanges)):
         skip = i*3
-        for n in range(rangePara[1+skip],rangePara[2+skip]+1):
+        begRange = int(rangePara[1+skip])
+        endRange = int(rangePara[2+skip])
+        for n in range(begRange,endRange+1):
             popList.append(unit(n, rangePara[0+skip]))
-        rangeList.append([rangePara[1+skip],rangePara[2+skip]])
+        rangeList.append([begRange,endRange])
 
 
 #Create ranges
@@ -123,6 +132,14 @@ def simpleRanges(numRanges):
         rangeDescriptions.append(createRange(i))
 
     return rangeDescriptions
+
+#REAL sampler
+
+def samp(poplist, sam, extra, seed):
+    random.seed(int(seed))
+    randomSamp = random.sample(poplist,int(sam)+int(extra))
+    return [randomSamp, int(sam), int(extra), int(seed)]
+
 
 #random sampler
 
@@ -161,7 +178,7 @@ def sampleList(randomSample, sampleSize):
 ###write random sample to excel workbook
 ##
 
-def writeExcel(popSize, rangeList, sampleSize, extraSelections, seed, export, rangeDescriptions):
+def writeExcel(popSize, rangeList, sampleSize, extraSelections, seed, export):
 
     #write summary header
     row = 1
@@ -170,11 +187,13 @@ def writeExcel(popSize, rangeList, sampleSize, extraSelections, seed, export, ra
     worksheet.write(row, col,'Population Size', bold)
     worksheet.write(row, col+1,popSize)
     k = 0
+    skip = 0
     for i in rangeList:
         row += 1
-        worksheet.write(row, col,'Range: ' + rangeDescriptions[k], bold)
+        worksheet.write(row, col,'Range: ' + rangePara[skip], bold)
         worksheet.write(row, col+1,str(i[0]) + ' - ' + str(i[1]))
         k += 1
+        skip += 3
     worksheet.write(row+1, col,'Sample Size', bold)
     worksheet.write(row+1, col+1,sampleSize)
     worksheet.write(row+2, col,'Extra Selections', bold)
@@ -210,28 +229,12 @@ def getPopSize(popList):
 def runTime():
 
     #Create ranges
-    popList = []
+    createPop(getnRanges(),getRangePara())
 
     #Choose type of sampling
-    rangeList = []
-
-    while True:
-        sampleType = raw_input('Choose a sample type. \'r\' for ranges. \'l\' for lines and rows. \'d\' for days of the week.: ')
-        if sampleType == 'r':
-            numRanges = input('Number of Ranges: ')
-            rangeDescriptions = simpleRanges(numRanges)
-            break
-        elif sampleType == 'l':
-            ## Complete
-            break
-        elif sampleType == 'd':
-            ## Complete
-            break
-        else:
-            print('Please provide a proper input.')
 
     #random sample accumulator!
-    stronk = sampler(popList)
+    stronk = samp(popList, getSam(), getEx(), getSeed())
     randomSample = stronk[0]
     sampleSize = stronk[1]
     extraSelections = stronk[2]
@@ -241,7 +244,7 @@ def runTime():
     export = sampleList(randomSample, sampleSize)
 
     #Write to excel
-    writeExcel(getPopSize(popList), rangeList, sampleSize, extraSelections, seed, export, rangeDescriptions)
+    writeExcel(getPopSize(popList), rangeList, sampleSize, extraSelections, seed, export)
 
 
 
