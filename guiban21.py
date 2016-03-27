@@ -263,7 +263,7 @@ class RangeView3(Frame):
         self.seed.insert(0, rng2.getSeed())
 
         self.nextB = Button(self, text="Generate", command=self.nextHandler)
-        self.prevB = Button(self, text="Previous", command=self.test1a)
+        self.prevB = Button(self, text="Previous", command=self.prevHandler)
 
         self.samlabel.grid(column=0, row=0, columnspan=2, sticky=(W))
         self.sam.grid(column=0, row=1, columnspan=1, sticky=(N, W))
@@ -287,11 +287,6 @@ class RangeView3(Frame):
         rng2.runTime()
 
     def prevHandler(self):
-
-        #write to rng2 variables
-        rng2.writeSam(self.sam.get())
-        rng2.writeEx(self.extra.get())
-        rng2.writeSeed(self.seed.get())
 
         self.parent.minor = RangeView2(self.parent)
         self.parent.minor.grid(column=1, row=0, columnspan=3, rowspan=2, sticky=(N, S, E, W))
