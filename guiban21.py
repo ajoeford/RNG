@@ -3,6 +3,7 @@
 from Tkinter import *
 from ttk import *
 import rng2
+import rng_days
 import tkMessageBox
 
 
@@ -27,20 +28,20 @@ class Major(Frame):
 
     def openRanges(self, window):
         window.destroy()
-        self.minor = Minor(self)
+        self.minor = RangeView1(self)
         self.minor.grid(column=1, row=0, columnspan=3, rowspan=2, sticky=(N, S, E, W))
     def openDays(self, window):
         window.destroy()
-        self.minor = RangeView1(self)
+        self.minor = DaysView1(self)
         self.minor.grid(column=1, row=0, columnspan=3, rowspan=2, sticky=(N, S, E, W))
     def initUI(self):
 
         self.parent.title("Random Number Generator")
         self.minor = RangeView1(self)
 
-        self.days = Button(self, text="Ranges", command=lambda: self.openDays(self.minor))
+        self.days = Button(self, text="Ranges", command=lambda: self.openRanges(self.minor))
 
-        self.rangeW = Button(self, text="Days", command=lambda: self.openRanges(self.minor))
+        self.rangeW = Button(self, text="Days", command=lambda: self.openDays(self.minor))
         quitB = Button(self, text="Quit", command=gquit)
 
 
@@ -291,7 +292,54 @@ class RangeView3(Frame):
         self.parent.minor = RangeView2(self.parent)
         self.parent.minor.grid(column=1, row=0, columnspan=3, rowspan=2, sticky=(N, S, E, W))
 
-class DaysBoxes(Frame):
+class DaysView1(Frame):
+
+    def __init__(self, parent):
+        Frame.__init__(self, parent, borderwidth=2, relief="sunken")
+        self.parent = parent
+        self.initUI()
+
+    def initUI(self):
+
+        self.startLabel = Label(self, text="Start date (MM/DD/YYYY):")
+        self.startDate = StringVar()
+        self.startDate = Entry(self)
+        self.startDate.insert(0, rng_days.getStartDate())
+
+        self.endLabel = Label(self, text="End date (MM/DD/YYYY):")
+        self.endDate = StringVar()
+        self.endDate = Entry(self)
+        self.endDate.insert(0, rng_days.getEndDate())
+
+        self.daysboxes = DaysBoxes2(self)
+        self.namelbl = Label(self, text="Choose Days of Week:")
+        #name = Entry(self)
+
+
+        self.nextB = Button(self, text="Next", command=self.nextHandler)
+        self.prevB = Button(self, text="Previous", command=self.test1a)
+
+        self.startLabel.grid(column=0, row=0, columnspan=2, sticky=(W))
+        self.startDate.grid(column=0, row=1, columnspan=1, sticky=(N, W))
+        self.endLabel.grid(column=0, row=4, columnspan=2, sticky=(W))
+        self.endDate.grid(column=0, row=5, columnspan=1, sticky=(N, W))
+
+        self.namelbl.grid(column=0, row=6, columnspan=1, sticky=(W))
+
+        self.nextB.grid(column=1, row=9, sticky=(S, E), padx=5, pady=5)
+        self.prevB.grid(column=0, row=9, sticky = (E))
+
+        for child in self.winfo_children(): child.grid_configure(padx=5, pady=5)
+
+    def test1a(self):
+        pass
+
+    def nextHandler(self):
+        rng2.writeRanges(self.numRanges.get())
+        self.parent.minor = RangeView2(self.parent)
+        self.parent.minor.grid(column=1, row=0, columnspan=3, rowspan=2, sticky=(N, S, E, W))
+
+class DaysBoxes2(Frame):
 
     def __init__(self, parent):
         self.parent = parent
@@ -320,6 +368,42 @@ class DaysBoxes(Frame):
         self.fri = Checkbutton(self.parent, text="Fri", variable=frivar, onvalue=True)
         self.sat = Checkbutton(self.parent, text="Sat", variable=satvar, onvalue=True)
 
+        self.sun.grid(column=0, row=7)
+        self.mon.grid(column=1, row=7)
+        self.tue.grid(column=2, row=7)
+        self.wed.grid(column=3, row=7)
+        self.thu.grid(column=4, row=7)
+        self.fri.grid(column=5, row=7)
+        self.sat.grid(column=6, row=7)
+
+class DaysBoxes(Frame):
+    #delete this class??
+    def __init__(self, parent):
+        self.parent = parent
+
+        sunvar = BooleanVar()
+        monvar = BooleanVar()
+        tuevar = BooleanVar()
+        wedvar = BooleanVar()
+        thuvar = BooleanVar()
+        frivar = BooleanVar()
+        satvar = BooleanVar()
+
+        sunvar.set(False)
+        monvar.set(True)
+        tuevar.set(True)
+        wedvar.set(True)
+        thuvar.set(True)
+        frivar.set(True)
+        satvar.set(False)
+
+        self.sun= Checkbutton(self.parent, text="Sun", variable=sunvar, onvalue=True)
+        self.mon = Checkbutton(self.parent, text="Mon", variable=monvar, onvalue=True)
+        self.tue = Checkbutton(self.parent, text="Tue", variable=tuevar, onvalue=True)
+        self.wed = Checkbutton(self.parent, text="Wed", variable=wedvar, onvalue=True)
+        self.thu = Checkbutton(self.parent, text="Thu", variable=thuvar, onvalue=True)
+        self.fri = Checkbutton(self.parent, text="Fri", variable=frivar, onvalue=True)
+        self.sat = Checkbutton(self.parent, text="Sat", variable=satvar, onvalue=True)
 
 if __name__ == '__main__':
     main()
